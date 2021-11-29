@@ -1,0 +1,107 @@
+---
+title: "Hotel Group analysis"
+author: "David"
+date: "28/11/2021"
+output: html_document
+---
+
+```{r libraries setup, echo=FALSE, message=FALSE, warning=FALSE}
+if (!require('ggplot2')) install.packages('ggplot2'); library('ggplot2')
+if (!require('knitr')) install.packages('knitr'); library('knitr')
+if (!require('dplyr')) install.packages('dplyr'); library('dplyr')
+if (!require('tidyr')) install.packages('tidyr'); library('tidyr')
+if (!require('here')) install.packages('tidyr'); library('here')
+if (!require('readr')) install.packages('readr'); library('readr')
+hotel_df <- read.csv("https://d3c33hcgiwev3.cloudfront.net/GL0bk8O2Sja9G5PDtko2uQ_31e445d7ca64417eb45aeaa08ec90bf1_hotel_bookings.csv?Expires=1638230400&Signature=USt5k8o~ozCdZsiMpeoLs36t0FSDYc5Ie8eDBabhXGMe7XBSUAVl5f4OLYF1OREYGNBj6OnFVpwO62yzrl6OuV2IsuWg9bimdg~kZzotnJ1q2YbuE-z64SJvic1q2i0sZiTtCb-KLQXATDczdDCIwqVf3l36tI0rGyQzocTNgS4_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A")
+```
+
+## Introduction:
+
+In this notebook are reports and observations from a worldwide group of hotels.
+
+In detail I will report:
+
+1. The types of hotels the group has
+2. The busiest months of the year for each type of hotel
+3. The Ranking of Hotel Packages sold
+4. Which market segment makes the most reservations per hotel type
+
+<br>
+
+## Let's start 
+
+### 1. The types of hotels the group has:
+
+```{r types of hotels, echo=FALSE, message=FALSE, warning=FALSE}
+hotel_types <- unique(hotel_df$hotel)
+hotel_types_df <- data.frame(hotel_types)
+colnames(hotel_types_df) <- c("Types of Hotels")
+kable(hotel_types_df) 
+```
+<br>
+
+### 2. The busiest months of the year for each type of hotel
+
+```{r busiest periods for city hotels, echo=FALSE, message=FALSE, warning=FALSE}
+city_hotels <- hotel_df %>% filter(hotel == "City Hotel")
+ggplot(city_hotels) + geom_bar(mapping=aes(x=arrival_date_month), fill="dodgerblue1") + 
+  theme(axis.text.x = element_text(angle = 45)) + ggtitle("City Hotels") + xlab("") + 
+  ylab("Number of guest arrivals")
+city_hotels_months_count <- city_hotels %>% count(arrival_date_month)
+city_hotels_months_count_df <- data.frame(city_hotels_months_count)
+colnames(city_hotels_months_count_df) <- c("Months", "Arrivals")
+kable(city_hotels_months_count_df %>% arrange(-Arrivals)) 
+```
+```{r busiest periods for resort hotels, echo=FALSE, message=FALSE, warning=FALSE}
+resort_hotels <- hotel_df %>% filter(hotel == "Resort Hotel")
+ggplot(resort_hotels) + geom_bar(mapping=aes(x=arrival_date_month), fill="springgreen4") + 
+  theme(axis.text.x = element_text(angle = 45)) + ggtitle("Resort Hotels") + xlab("") + 
+  ylab("Number of guest arrivals")
+resort_hotels_months_count <- resort_hotels %>% count(arrival_date_month)
+resort_hotels_months_count_df <- data.frame(resort_hotels_months_count)
+colnames(resort_hotels_months_count_df) <- c("Months", "Arrivals")
+kable(resort_hotels_months_count_df %>% arrange(-Arrivals))
+```
+<br>
+
+### 3. The Ranking of Hotel Packages sold
+
+```{r top 3 food packages, echo=FALSE, message=FALSE, warning=FALSE}
+# unique(hotel_df$meal)
+ranking_of_packages <- c("Nº 1", "Nº 2", "Nº 3", "Nº 4", "Nº 5")
+packages <- c("BB", "HB", "SC", "Undefined", "FB")
+packages_meaning <- c("Bed and Breakfast", "Half Board", "Self Catering", "Undefined", "Full Board")
+packages_meaning_in_english <- c("Bed, Breakfast", "Bed, Breakfast, Dinner", "Bed", "Undefined", "Bed, Breakfast, Lunch, Dinner")
+packages_units_sold <- c(92310, 14463, 10650, 1169, 798)
+meal_plans_df <- data.frame(ranking_of_packages, packages, packages_meaning, packages_meaning_in_english, packages_units_sold)
+colnames(meal_plans_df) <- c("Ranking", "Hotel packages", "Meaning of Hotel packages", "What's included on each package", "Units sold in 2015, 2016 and 2017")
+kable(meal_plans_df)
+```
+<br>
+
+### 4. Which market segment makes the most reservations per hotel type
+
+```{r top market segment, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(hotel_df) + geom_bar(mapping=aes(x= market_segment, fill= market_segment)) + 
+  theme(axis.text.x = element_text(angle=90)) + labs(fill= "Market Segment", x= "", y="Number of reservations") + 
+  facet_wrap(~hotel)
+```
+
+<br>
+
+## Observations:
+
+* From the month of May until end of August, both types of hotels will receive more reservations.
+* From the month of November until end of January, both hotel types will receive less reservations.
+* The package most sold with a difference of 538 % relative to the second place is "Bed and breakfast"(BB).
+* The market segment which provides the most reservations is Online TA (online travel agency).
+
+<br>
+
+## Suggested actions to the managment team:
+
+* Recruit more staff in the whole company, during the months of February and March, to train them in order to tackle the busy periods of May, June, July and August.
+* Raise the prices in the whole company, by 32% during the months May and June, and raise by 57% during the  months of July and August.
+* Liaise with the marketing team in order to create strategies for the whole company that promote higher number of reservations during the months November, December and January.
+* Liaise with the marketing and F&B teams to create promotions to develop the Lunch time in order to retain more reservations.
+* Liaise with the I.T and marketing teams to develop the company website in order to attract more direct reservations through the company's website.
