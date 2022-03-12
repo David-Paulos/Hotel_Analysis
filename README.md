@@ -20,7 +20,7 @@
 
     On the Rstudio console pane type $ Hotel_analysis.R and press return.
     -- Or --
-    Open the Hotel_analysis_in_R.Rmd with Rstudio and run the code chuncks. 
+    Open the Hotel_analysis_in_R.Rmd with Rstudio and run the code chunks. 
 
 *Enjoy.*
  
